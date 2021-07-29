@@ -3,7 +3,7 @@
 // @version      0.0.1
 // @description  adds total problem solves to top of table
 // @author       Gaurang Tandon
-// @match        https://codechef.com/public/rankings/*
+// @match        https://www.codechef.com/public/rankings/*
 // @run-at       document-start
 // ==/UserScript==
 
@@ -15,23 +15,31 @@ function getOneRowScore(tr) {
         // the "score" node comes just before problem node
         // and it has a title set
         if (td.getAttribute("title")) break;
-        let tdScore = td.innerText.match("^\\d+")[0];
+        let tdScore = td.innerText.match("^\\d+");
+        tdScore = tdScore ? tdScore[0] : "0";
         scores.unshift(Number.parseInt(tdScore));
     }
     return scores;
 }
 
+function addVectors(veca, vecb) {
+    return veca.map((val, idx) => val + vecb[idx]);
+}
+
 function scoreAllRows(rows) {
-    let scores = rows.map(row => getOneRowScore(row));
+    // html collection does not allow map by default
+    let scores = [...rows].map(row => getOneRowScore(row));
     // sanity check: all rows must have same number of columns
-    if (!scores.every(v => v.length == scores[0].length))
+    if (!scores.every(v => v.length === scores[0].length))
         return null;
-    return scores;
+
+    return scores.reduce(addVectors);
 }
 
 function getTH() {
     return document.createElement("th");
 }
+
 function getTHWithText(text) {
     let th = getTH();
     th.innerText = text;
@@ -39,6 +47,19 @@ function getTHWithText(text) {
 }
 function getMultipleTHs(texts) {
     return texts.map(txt => getTHWithText(txt));
+}
+
+function getStats(scores) {
+    let container = document.createElement("div");
+    container.style.float = "left";
+
+    let result = scores
+        .map((val, idx) => [val, idx])
+        .sort(([a], [b]) => b - a)
+        .map(([val, idx], sortedIdx) => `${sortedIdx + 1}. P${idx + 1} (${val})`)
+        .join("\n");
+    container.innerText = `Problems sorted in ascending order of score\n${result}`;
+    return container;
 }
 
 function improveTable(table) {
@@ -61,6 +82,10 @@ function improveTable(table) {
         newRow.appendChild(th);
 
     thead.appendChild(newRow);
+
+    let statsContainer = getStats(scores);
+    let tableContainer = table.parentNode;
+    tableContainer.insertBefore(statsContainer, table);
 }
 
 function onDocLoad() {
@@ -76,3 +101,4 @@ function onDocLoad() {
 }
 
 onDocLoad();
+
