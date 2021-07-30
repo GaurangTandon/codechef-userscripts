@@ -50,15 +50,16 @@ function getMultipleTHs(texts) {
 }
 
 function getStats(scores) {
-    let container = document.createElement("div");
+    let container = document.createElement("details");
     container.style.float = "left";
 
     let result = scores
         .map((val, idx) => [val, idx])
         .sort(([a], [b]) => b - a)
         .map(([val, idx], sortedIdx) => `${sortedIdx + 1}. P${idx + 1} (${val})`)
-        .join("\n");
-    container.innerText = `Problems sorted in ascending order of score\n${result}`;
+        .join("<br>");
+    container.innerHTML = `<summary>Problems sorted in ascending order of score</summary>${result}`;
+    container.style.cursor = "pointer";
     return container;
 }
 

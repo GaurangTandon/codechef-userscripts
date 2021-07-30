@@ -1,12 +1,14 @@
 Adds a total score for each problem at the top.
 
+## Before
+
+![](./before.png)
+
 ## After
 
 ![](./after.png)
 
-## Before
-
-![](./before.png)
+(the problems sorted section is by default collapsed)
 
 ## How to cross reference problem name?
 
